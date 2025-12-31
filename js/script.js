@@ -54,22 +54,47 @@ const sections = document.querySelectorAll('section[id]');
 // Highlight active nav link based on scroll position
 function highlightNavLink() {
     const scrollY = window.pageYOffset;
+    const windowHeight = window.innerHeight;
+    
+    // Remove all active classes first
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
 
+    // Find the current section
+    let currentSection = '';
+    
     sections.forEach(section => {
+        const sectionTop = section.offsetTop - 150;
         const sectionHeight = section.offsetHeight;
-        const sectionTop = section.offsetTop - 100;
         const sectionId = section.getAttribute('id');
-        const navLink = document.querySelector(`.nav-link[href="#${sectionId}"]`);
-
-        if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-            navLink?.classList.add('active');
-        } else {
-            navLink?.classList.remove('active');
+        
+        if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+            currentSection = sectionId;
         }
     });
+    
+    // If at the very top, highlight Home
+    if (scrollY < 100) {
+        currentSection = 'home';
+    }
+    
+    // If at the bottom, highlight Contact
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+        currentSection = 'contact';
+    }
+    
+    // Add active class to the current nav link
+    if (currentSection) {
+        const activeLink = document.querySelector(`.nav-link[href="#${currentSection}"]`);
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
+    }
 }
 
 window.addEventListener('scroll', highlightNavLink);
+window.addEventListener('load', highlightNavLink);
 
 // ===================================
 // Navbar Background on Scroll
